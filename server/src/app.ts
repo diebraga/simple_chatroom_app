@@ -23,7 +23,11 @@ const io = new Server(server, {
 })
 
 io.on('connection', (socket: Socket) => {
-  log.info(socket.id)
+  log.info(`User connected id: `+socket.id)
+
+  socket.on('disconnect', () => {
+    log.info('User disconnected', socket.id)
+  })
 })
 
 server.listen(port, host, () => {
