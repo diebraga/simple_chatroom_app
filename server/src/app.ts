@@ -25,9 +25,19 @@ const io = new Server(server, {
 io.on('connection', (socket: Socket) => {
   log.info(`User connected id: `+socket.id)
 
-  socket.on('disconnect', () => {
-    log.info('User disconnected', socket.id)
-  })
+  socket.on("join_room", (data) => {
+    socket.join(data.room);
+    log.info(`User with ID: ${socket.id} joined room: ${data.room}`);
+  });
+
+  socket.on("send_message", (data) => {
+    log.info(data)
+    socket.to(data.room).emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    log.info("User Disconnected", socket.id);
+  });
 })
 
 server.listen(port, host, () => {
