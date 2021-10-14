@@ -1,12 +1,21 @@
 import { Box, Button, Flex, Input, Text, useToast, VStack } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Messages } from "../../types/chat";
 import { ConversationBoxProps } from "../../types/props";
 
 export default function ConversationBox({ socket, username, room, chatIsShowing }: ConversationBoxProps) {
   const [currentMessage, setCurrentMessage] = useState('')
   const [messageList, setMessageList] = useState<Messages[]>([])
+
+  const messagesEndRef = useRef<any>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(scrollToBottom, [messageList]);
+
   const toast = useToast()
 
   async function sendMessage(e: FormEvent<HTMLFontElement | HTMLInputElement | HTMLDivElement>) {
@@ -20,7 +29,10 @@ export default function ConversationBox({ socket, username, room, chatIsShowing 
     }
 
     if (currentMessage === '') return
-    else socket.emit('send_message', messageData)
+    else {
+      setCurrentMessage('')
+      socket.emit('send_message', messageData)
+    }
   }
 
   useEffect(() => {
@@ -35,6 +47,7 @@ export default function ConversationBox({ socket, username, room, chatIsShowing 
         title: "Info.",
         description: data,
         status: "info",
+        position: 'top-right',
         duration: 9000,
         isClosable: true,
       })
@@ -57,6 +70,8 @@ export default function ConversationBox({ socket, username, room, chatIsShowing 
                 </Flex>
                 <Text as='span' fontSize='10px'><strong>{message.author}</strong> {message.formated_time}</Text>
               </Box>
+              <div ref={messagesEndRef} />
+
             </Flex>          
           )
         })}
