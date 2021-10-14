@@ -1,6 +1,6 @@
 require('dotenv').config()
 
 export default {
-  port: 5700,
+  port: 5000,
   host: 'localhost',
 }
