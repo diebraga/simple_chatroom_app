@@ -11,7 +11,7 @@ export default function ConversationBox({ socket, username, room, chatIsShowing 
   const messagesEndRef = useRef<any>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
   useEffect(scrollToBottom, [messageList]);
