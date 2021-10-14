@@ -27,7 +27,8 @@ io.on('connection', (socket: Socket) => {
 
   socket.on("join_room", (data) => {
     socket.join(data.room);
-    log.info(`User with ID: ${socket.id} joined room: ${data.room}`);
+    log.info(`${data.username} joined the room ${data.room}`);
+    socket.to(data.room).emit("join_room", `${data.username} joined the room`);
   });
 
   socket.on("send_message", (data) => {

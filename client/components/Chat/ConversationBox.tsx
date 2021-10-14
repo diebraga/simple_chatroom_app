@@ -1,19 +1,13 @@
-import { Avatar, Box, Button, Center, Flex, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Text, useToast, VStack } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { FormEvent, useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
-import { Messages } from "../types/chat";
+import { Messages } from "../../types/chat";
+import { ConversationBoxProps } from "../../types/props";
 
-type ChatProps = {
-  socket: Socket
-  username: string
-  room: string
-  chatIsShowing: boolean
-}
-
-export default function Chat({ socket, username, room, chatIsShowing }: ChatProps) {
+export default function ConversationBox({ socket, username, room, chatIsShowing }: ConversationBoxProps) {
   const [currentMessage, setCurrentMessage] = useState('')
   const [messageList, setMessageList] = useState<Messages[]>([])
+  const toast = useToast()
 
   async function sendMessage(e: FormEvent<HTMLFontElement | HTMLInputElement | HTMLDivElement>) {
     e.preventDefault()
@@ -35,9 +29,22 @@ export default function Chat({ socket, username, room, chatIsShowing }: ChatProp
     })
   }, [socket])
 
+  useEffect(() => {
+    socket.on('join_room', (data) => {
+      toast({
+        title: "Info.",
+        description: data,
+        status: "info",
+        duration: 9000,
+        isClosable: true,
+      })
+    })
+  }, [socket])
+
+
   return (
-    <VStack as='form' onSubmit={sendMessage} display={!chatIsShowing ? 'none' : 'block'}>
-      <Text>Live chat</Text>
+    <VStack as='form' onSubmit={sendMessage} display={!chatIsShowing ? 'none' : 'block'} mt='10px'>
+      <Text fontSize='28px'>Live chat</Text>
       <ChatContainer>
         {messageList.map((message, index) => {
           const isUserEqualsToAuthor = username === message.author
@@ -57,9 +64,8 @@ export default function Chat({ socket, username, room, chatIsShowing }: ChatProp
       <Flex>
         <Input 
           onChange={e => setCurrentMessage(e.target.value)} 
-          onKeyPress={(e) => {
-            e.key === 'Enter' && sendMessage(e)
-          }}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage(e)}
+          value={currentMessage}
         />
         <Button type='submit'>Send</Button>
       </Flex>
