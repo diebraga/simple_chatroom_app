@@ -68,7 +68,7 @@ export default function ConversationBox({ socket, username, room, chatIsShowing 
                 <Flex bg={isUserEqualsToAuthor ? 'blue.400' : 'whatsapp.600'} border='1px' color='white' borderColor='gray.900' p='1' borderRadius='lg'>
                   <Text fontSize="sm">{message.message}</Text>
                 </Flex>
-                <Text as='span' fontSize='10px'><strong>{message.author}</strong> {message.formated_time}</Text>
+                <Text as='span' fontSize='10px'><strong>{isUserEqualsToAuthor ? 'me' : message.author}</strong> {message.formated_time}</Text>
               </Box>
               <div ref={messagesEndRef} />
 
